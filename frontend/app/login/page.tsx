@@ -19,6 +19,8 @@ import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 import { authService } from "@/services/AuthService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
+import Image from "next/image";
+import Logo from "@/public/logo.png";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -58,7 +60,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <div className="text-2xl font-bold">App Logo</div>
+            <Image src={Logo} alt="App Logo" width={100} height={100} />
           </div>
           <CardTitle className="text-2xl text-center">Login Page</CardTitle>
         </CardHeader>

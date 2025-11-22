@@ -19,6 +19,8 @@ import { signupSchema, type SignupFormData } from "@/lib/validations/auth";
 import { authService } from "@/services/AuthService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
+import Logo from "@/public/logo.png";
+import Image from "next/image";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -62,7 +64,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <div className="text-2xl font-bold">App Logo</div>
+            <Image src={Logo} alt="App Logo" width={100} height={100} />
           </div>
           <CardTitle className="text-2xl text-center">Sign up Page</CardTitle>
         </CardHeader>

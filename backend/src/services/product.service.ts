@@ -27,4 +27,10 @@ export class ProductService {
   static async deleteProduct(id: number): Promise<boolean> {
     return await ProductModel.delete(id);
   }
+
+  static async getProductStocks(): Promise<
+    Array<Product & { free_to_use: number; on_hand: number }>
+  > {
+    return await ProductModel.findAllWithStocks();
+  }
 }

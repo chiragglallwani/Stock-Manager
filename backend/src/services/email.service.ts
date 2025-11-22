@@ -21,7 +21,7 @@ export class EmailService {
 
     const msg = {
       to: email,
-      from: process.env.SENDGRID_FROM_EMAIL || "noreply@stockmanager.com",
+      from: "lalwanichirag3@gmail.com",
       subject: "Password Reset OTP - Stock Manager",
       text: `Your OTP for password reset is: ${otp}. This OTP will expire in 10 minutes.`,
       html: `
@@ -39,8 +39,26 @@ export class EmailService {
 
     try {
       await sgMail.send(msg);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending email:", error);
+
+      // Provide more detailed error messages
+      if (error.response) {
+        const { statusCode, body } = error.response;
+        const errorMessage =
+          body?.errors?.[0]?.message || "Unknown SendGrid error";
+
+        if (statusCode === 403) {
+          throw new Error(
+            `SendGrid API error (403 Forbidden): ${errorMessage}. ` +
+              `Please verify: 1) Your API key is correct, 2) The "from" email (${msg.from}) is verified in SendGrid, ` +
+              `3) Your API key has Mail Send permissions.`
+          );
+        }
+
+        throw new Error(`SendGrid API error (${statusCode}): ${errorMessage}`);
+      }
+
       throw new Error("Failed to send OTP email");
     }
   }

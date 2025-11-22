@@ -103,4 +103,19 @@ export class AuthController {
       ResponseHandler.error(res, "Failed to logout", 500);
     }
   }
+
+  static async refreshToken(req: Request, res: Response): Promise<void> {
+    try {
+      const { refresh_token } = req.body;
+      if (!refresh_token) {
+        ResponseHandler.error(res, "Refresh token is required", 400);
+        return;
+      }
+
+      const result = await AuthService.refreshToken(refresh_token);
+      ResponseHandler.success(res, result, "Token refreshed successfully");
+    } catch (error) {
+      ResponseHandler.error(res, "Failed to refresh token", 500);
+    }
+  }
 }

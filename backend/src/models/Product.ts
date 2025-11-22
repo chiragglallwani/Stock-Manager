@@ -94,4 +94,32 @@ export class ProductModel {
     const result = await pool.query("DELETE FROM products WHERE id = $1", [id]);
     return result.rowCount ? result.rowCount > 0 : false;
   }
+
+  static async findAllWithStocks(): Promise<
+    Array<Product & { on_hand: number; free_to_use: number }>
+  > {
+    const result = await pool.query(`
+      SELECT 
+        p.id,
+        p.price,
+        p.name,
+        p.sku_code,
+        p.stocks as on_hand,
+        COALESCE(
+          p.stocks - SUM(
+            CASE 
+              WHEN pl.status IN ('Draft', 'Waiting', 'Ready') 
+              THEN pl.quantity 
+              ELSE 0 
+            END
+          ),
+          p.stocks
+        ) as free_to_use
+      FROM products p
+      LEFT JOIN product_logs pl ON p.id = pl.product_id
+      GROUP BY p.id, p.price, p.name, p.sku_code, p.stocks
+      ORDER BY p.id
+    `);
+    return result.rows;
+  }
 }

@@ -139,7 +139,10 @@ export class AuthService {
       await EmailService.sendOTP(data.email, otp);
     } catch (error) {
       console.error("Error sending OTP email:", error);
-      throw new Error("Failed to send OTP email");
+      // Re-throw the error with detailed message from EmailService
+      throw error instanceof Error
+        ? error
+        : new Error("Failed to send OTP email");
     }
   }
 
@@ -172,5 +175,36 @@ export class AuthService {
 
     // Update refresh token to null
     await UserModel.update(id, { refresh_token: null });
+  }
+
+  static async refreshToken(refresh_token: string): Promise<AuthResponse> {
+    // Verify refresh token
+    const payload = JWTUtil.verifyRefreshToken(refresh_token);
+    if (!payload) {
+      throw new Error("Invalid or expired refresh token");
+    }
+
+    // Find user
+    const user = await UserModel.findById(payload.id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Generate new tokens
+    const newAccessToken = JWTUtil.generateAccessToken(payload);
+    const newRefreshToken = JWTUtil.generateRefreshToken(payload);
+
+    // Store new refresh token in database
+    await UserModel.update(user.id!, { refresh_token: newRefreshToken });
+
+    return {
+      user: {
+        id: user.id!,
+        username: user.username,
+        email: user.email,
+      },
+      access_token: newAccessToken,
+      refresh_token: newRefreshToken,
+    };
   }
 }

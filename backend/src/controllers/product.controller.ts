@@ -152,4 +152,23 @@ export class ProductController {
       );
     }
   }
+
+  static async getProductStocks(req: Request, res: Response): Promise<void> {
+    try {
+      const products = await ProductService.getProductStocks();
+      ResponseHandler.success(
+        res,
+        products,
+        "Product stocks retrieved successfully"
+      );
+    } catch (error) {
+      ResponseHandler.error(
+        res,
+        error instanceof Error
+          ? error.message
+          : "Failed to retrieve product stocks",
+        500
+      );
+    }
+  }
 }

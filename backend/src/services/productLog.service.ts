@@ -57,4 +57,60 @@ export class ProductLogService {
   static async deleteProductLog(id: number): Promise<boolean> {
     return await ProductLogModel.delete(id);
   }
+
+  static async getAllProductLogsWithProductName(): Promise<
+    Array<ProductLog & { product_name: string }>
+  > {
+    return await ProductLogModel.findAllWithProductName();
+  }
+
+  static async getDeliveriesWithProductName(): Promise<
+    Array<ProductLog & { product_name: string }>
+  > {
+    return await ProductLogModel.getDeliveriesWithProductName();
+  }
+
+  static async getReceiptsWithProductName(): Promise<
+    Array<ProductLog & { product_name: string }>
+  > {
+    return await ProductLogModel.getReceiptsWithProductName();
+  }
+
+  static async createReceipt(
+    productLogs: Array<Omit<ProductLog, "id" | "reference_id">>,
+    warehouseShortCode: string
+  ): Promise<ProductLog[]> {
+    return await ProductLogModel.createMultiple(productLogs, warehouseShortCode, "IN");
+  }
+
+  static async createDelivery(
+    productLogs: Array<Omit<ProductLog, "id" | "reference_id">>,
+    warehouseShortCode: string
+  ): Promise<ProductLog[]> {
+    return await ProductLogModel.createMultiple(productLogs, warehouseShortCode, "OUT");
+  }
+
+  static async updateStatusByReferenceId(
+    reference_id: string,
+    newStatus: ProductLogStatus
+  ): Promise<ProductLog[]> {
+    return await ProductLogModel.updateStatusByReferenceId(
+      reference_id,
+      newStatus
+    );
+  }
+
+  static async getReceiptStats(): Promise<{
+    total: number;
+    late: number;
+  }> {
+    return await ProductLogModel.getReceiptStats();
+  }
+
+  static async getDeliveryStats(): Promise<{
+    total: number;
+    late: number;
+  }> {
+    return await ProductLogModel.getDeliveryStats();
+  }
 }
